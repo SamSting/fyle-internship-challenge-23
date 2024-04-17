@@ -1,19 +1,25 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { tap, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { User } from '../user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+  constructor(private http: HttpClient) {}
 
-  constructor(
-    private httpClient: HttpClient
-  ) { }
-
-  getUser(githubUsername: string) {
-    return this.httpClient.get(`https://api.github.com/users/${githubUsername}`);
+  getUser(username: string): Observable<User> {
+    return this.http.get<User>(`https://api.github.com/users/${username}`);
   }
 
-  // implement getRepos method by referring to the documentation. Add proper types for the return type and params 
+  getRepositories(username: string): Observable<any[]> {
+    return this.http.get<any[]>(`https://api.github.com/users/${username}/repos`).pipe(
+      map(repos => repos.map(repo => ({
+        ...repo,
+        language: repo.language || 'Not specified'
+      })))
+    );
+  }
 }

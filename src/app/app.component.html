@@ -1,5 +1,42 @@
-<div class="grid h-screen place-items-center">
-  <div class="font-bold text-3xl">
-    Fyle Internship Challenge
+<div class="app-container">
+	<h1><b>Github Account Fetcher</b></h1>
+	<app-search-bar (searchEvent)="search($event)"></app-search-bar>
+  
+	<div *ngIf="loading" class="loader-container">
+	  <!-- Display loader while loading is true -->
+	  <img src="https://file.notion.so/f/f/983632c5-ee66-4f64-a1a6-b3eeff04ddb8/8e27f275-a292-4aaa-9628-a867b0655374/loader.gif?id=8fe0f56f-7355-4cf8-a1d6-dd5e62f81ff5&table=block&spaceId=983632c5-ee66-4f64-a1a6-b3eeff04ddb8&expirationTimestamp=1713441600000&signature=kUHYhmASb8rgiM1xA4OVBakTQF1VODewUQGObL2mI9c&downloadName=loader.gif" alt="Loading...">
+	</div>
+  
+	<ng-container *ngIf="profileUrl && !loading; else errorDisplay">
+	  <!-- Display profile info only when profileUrl is available and not loading -->
+	  <div class="profile-info-container">
+		<div class="profile-container">
+		  <img [src]="profileUrl" alt="User Profile" class="round-image">
+		</div>
+		<div class="user-info">
+		  <h2>{{ username }}</h2>
+		  <p>{{ userBio }}</p>
+		  <p>GitHub Profile: <a [href]="githubUrl" target="_blank">{{ githubUrl }}</a></p>
+  
+		  <h3>Popular Repositories</h3>
+		  <div class="repo-container">
+			<div *ngFor="let repo of paginatedRepositories" class="repo-item">
+			  <h4>{{ repo.name }}</h4>
+			  <p *ngIf="repo.description">{{ repo.description }}</p> <!-- Display the description if available -->
+			  <p>Languages: {{ repo.language || 'Not specified' }}</p> <!-- Default language to 'Not specified' if not available -->
+			</div>
+		  </div>
+  
+		  <div *ngIf="repositories.length > reposPerPage" class="pagination">
+			<button *ngFor="let page of pages" (click)="onPageChange(page)" [class.active]="page === currentPage">{{ page }}</button>
+		  </div>
+		</div>
+	  </div>
+	</ng-container>
+  
+	<ng-template #errorDisplay>
+	  <!-- Display error message if loading failed -->
+	  <p *ngIf="error" class="error-message">{{ error }}</p>
+	</ng-template>
   </div>
-</div>
+  
